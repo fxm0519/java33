@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}"/>
+<style type="text/css">
+			*{
+				margin: 0px;
+				padding: 0px;
+			}
+			.max{
+				width: 500px;
+				height: 300px;
+				border: 1 red solid;
+			}
+		</style>
+</head>
+<body>
+	<div class="container-fluid" id="ctx">
+			<div class="max">
+				<table class="table">
+					<tr>
+						<td>
+							<label for="exampleInputEmail1">客户编号：</label>
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="客户编号" v-model="users.uid">
+						</td>
+						<td>
+							<label for="exampleInputEmail1">客户名称：</label>
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="客户名称" v-model="users.uname">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="exampleInputEmail1">联系人：</label>
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="联系人" v-model="users.ulian">
+						</td>
+						<td>
+							<label for="exampleInputEmail1">创建日期：</label>
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="创建日期" v-model="users.udate">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="exampleInputEmail1">联系电话：</label>
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="联系电话" v-model="users.uphone">
+						</td>
+						<td>
+							<label for="exampleInputEmail1">送货地址：</label>
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="地址编号" v-model="address.sid">
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="地址" v-model="address.saddress">
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for="exampleInputEmail1">负责人：</label>
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="负责人" v-model="users.ufz">
+						</td>
+						<td>
+							<label for="exampleInputEmail1">税务登记号：</label>
+							<input type="text" class="form-control" id="exampleInputEmail1" placeholder="税务登记号" v-model="users.usw">
+						</td>
+					</tr>
+				</table>
+				<button @click="findById" class="btn btn-info">查询</button>
+				<button @click="update" class="btn btn-warning">保存</button>
+			</div>
+		</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-1.12.4.js}"></script>
+<script type="text/javascript" th:src="@{/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/vue.js}"></script>
+<script type="text/javascript">
+	var vm = new Vue({
+		el:"#ctx",
+		data(){
+			return {
+				users:{},
+				address:{}
+			}
+		},
+		methods:{
+// 			根据id查询客户
+			findById(){
+				var that = this;
+				$.ajax({
+					url:"[[@{/users/findById}]]",
+					data:{
+						uid:that.users.uid
+					},
+					success:function(result){
+						if(result == ""){
+							alert("对不起！没有该客户。")
+						}else{
+							that.users = result;
+							var index = result.address.length;
+							that.address = result.address[index-1];
+						}
+						
+					}
+				});
+			},
+// 			更新客户
+			update(){
+				var that = this;
+				this.users.address = [];
+				this.users.address.push(that.address);
+				var us = JSON.stringify(this.users);
+				console.log("ss:"+this.address.saddress);
+				
+				if(this.users.uid == undefined){
+					alert("请填写用户编号")
+					return;
+				}
+				
+				if(this.users.uname == undefined){
+					alert("请填写客户名称")
+					return;
+				}
+				
+				if(this.users.ulian == undefined){
+					alert("请填写联系人")
+					return;
+				}
+				
+				if(this.users.udate == undefined){
+					alert("请填写创建日期")
+					return;
+				}
+				
+				if(this.users.uphone == undefined){
+					alert("请填写联系电话")
+					return;
+				}
+				
+				if(this.address.sid == undefined){
+					alert("请填写地址编号")
+					return;
+				}
+				
+				if(this.address.saddress == undefined){
+					alert("请填写地址")
+					return;
+				}
+				
+				if(this.users.ufz == undefined){
+					alert("请填写负责人")
+					return;
+				}
+				
+				if(this.users.usw == undefined){
+					alert("请填写税务登记号")
+					return;
+				}
+				
+				
+				
+				$.ajax({
+					url:"[[@{/users/update}]]",
+					data:us,
+					method:"post",
+					contentType:"application/json;charset=utf-8",
+					dataType:"text",
+					success:function(result){
+ 						if(result=="00000"){
+ 							alert("新增成功");
+ 						} else if(result=="00001"){
+ 							alert("修改成功");
+ 						} else if(result=="00002"){
+ 							alert("新增成功");
+ 						} else if(result=="00003"){
+ 							alert("已存在的地址编号");
+ 						}
+					}
+				});
+			}
+		}
+	});
+</script>
+</body>
+</html>
